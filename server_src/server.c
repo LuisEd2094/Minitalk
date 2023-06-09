@@ -4,21 +4,35 @@
 
 void	action(int sig, siginfo_t *info, void *context)
 {
+    static int current_pid = 0;
+    static int nex_pid = 0;
+    static int counter = 0;
+    
     if (sig || context)
         ft_printf("");
-    ft_printf("Client PID on server side %i\n", info->si_pid);
-    kill(info->si_pid, SIGUSR2);
-    ft_printf("I am waiting a bit lalalallalallala");
-    //sleep(1);
-    ft_printf("I just woke up\n");
-    kill(info->si_pid, SIGUSR2);
+    if (!current_pid)
+        current_pid = info->si_pid;
+    else if (current_pid != info->si_pid)
+        nex_pid = info->si_pid;
+    ft_printf("Current %i Next %i\n", current_pid, nex_pid);    
+    if (current_pid == info->si_pid && counter < 10000)
+    {
+        counter++;
+        ft_printf("I am sending a confirmation signal\nCounter = %i", counter);
+        kill(current_pid, SIGUSR1);
+    }
+    else if (current_pid != info->si_pid)
+        kill(info->si_pid, SIGUSR2);
+    if (counter >= 10000 && nex_pid)
+    {
+        ft_printf("I am switching clients to serve\n");
+        ft_printf("Current %i Next %i\n", current_pid, nex_pid);
+        current_pid = nex_pid;
+        ft_printf("After change Current %i Next %i\n", current_pid, nex_pid);
 
-    kill(info->si_pid, SIGUSR1);
-    sleep(1);
-    kill(info->si_pid, SIGUSR2);
-    ft_printf("just sent a new signal to %i\n", info->si_pid);
-
-
+        counter = 0;
+        kill(current_pid, SIGUSR1);
+    }
 }
 
 int main(void)
