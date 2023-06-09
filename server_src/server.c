@@ -2,11 +2,34 @@
 #include <signal.h>
 
 
+void work_on_signal(int sig, siginfo_t *info, void *context)
+{
+	static int				i = 0;
+	static unsigned char	c = 0;
+
+    info = info;
+    context = context;
+	if (sig == SIGUSR2)
+		c = c << 1;
+	else if (sig == SIGUSR1)
+		c = (c << 1) | 0b00000001;
+	i++;
+	if (i == 8)
+	{
+		ft_printf("%c", c);
+		i = 0;
+		c = 0;
+	}
+    kill(info->si_pid, SIGUSR1);
+}
+
 void	action(int sig, siginfo_t *info, void *context)
 {
     static int current_pid = 0;
     static int nex_pid = 0;
-    static int counter = 0;
+    static int working_signal = 0;
+
+    //static int counter = 0;
     
     if (sig || context)
         ft_printf("");
@@ -14,15 +37,19 @@ void	action(int sig, siginfo_t *info, void *context)
         current_pid = info->si_pid;
     else if (current_pid != info->si_pid)
         nex_pid = info->si_pid;
-    ft_printf("Current %i Next %i\n", current_pid, nex_pid);    
-    if (current_pid == info->si_pid && counter < 10000)
+    if (current_pid == info->si_pid && working_signal)
+        work_on_signal(sig, info, context);
+    else if (current_pid == info->si_pid && !working_signal)
     {
-        counter++;
-        ft_printf("I am sending a confirmation signal\nCounter = %i", counter);
+        working_signal = 1;
         kill(current_pid, SIGUSR1);
     }
     else if (current_pid != info->si_pid)
         kill(info->si_pid, SIGUSR2);
+    if (nex_pid)
+        nex_pid = nex_pid;
+    
+      /*  
     if (counter >= 10000 && nex_pid)
     {
         ft_printf("I am switching clients to serve\n");
@@ -32,7 +59,7 @@ void	action(int sig, siginfo_t *info, void *context)
 
         counter = 0;
         kill(current_pid, SIGUSR1);
-    }
+    }*/
 }
 
 int main(void)

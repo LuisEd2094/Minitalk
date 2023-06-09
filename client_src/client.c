@@ -3,13 +3,51 @@
 #include <signal.h>
 
 
+
+void	char_to_bin(unsigned const c, int pid)
+{
+    static char i = 0;
+
+    ft_printf("I am sending a bit i = %i\n", i);
+	if (c << i & 0b10000000)
+		kill(pid, SIGUSR1);
+	else
+		kill(pid, SIGUSR2);
+	i++;
+    if (i == 8)
+        i = 0;
+}
+
+
+
 void send_str(int sig, siginfo_t *info, void *context)
 {
-    if (sig || info || context)
-        ft_printf("");
+    char * str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam elementum tempus enim, ac dignissim tellus tincidunt in. Nunc rutrum ornare erat, non bibendum felis congue venenatis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut eleifend nunc sem, id suscipit ante faucibus id. Quisque vitae orci fringilla, gravida nulla ut, sollicitudin lectus. Curabitur sagittis velit ac sem condimentum, nec tincidunt ante sagittis. Integer sit amet fermentum ipsum, ut aliquam odio. Fusce vitae nulla pellentesque, sodales nibh malesuada, tincidunt enim. Fusce ligula est, tempor non nibh eget, auctor luctus eros. Mauris sem enim, dignissim at pretium.";
+    static int i = 0;
+    static int bit = 0;
+
     if (sig == SIGUSR1)
-        ft_printf("Here I am sending the signal\n");
-    kill(info->si_pid, SIGUSR1);
+    {
+        if (str[i])
+        {
+            if(sig || context)
+            {
+                sig = sig;
+            }
+            if (bit < 8)
+            {
+                char_to_bin(str[i], info->si_pid);
+                bit++;
+
+            }
+            if (bit == 8)
+            {
+                bit = 0;
+                i++;
+            }
+        }
+    }
+
 }
 
 void	action(int sig, siginfo_t *info, void *context)
