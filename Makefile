@@ -44,7 +44,7 @@ OBJS_S		=	$(addprefix $(OB_S_PATH), $(SRC_S:.c=.o))
 DEPS		=	$(addprefix $(DEPS_C_PATH), $(SRC_C:.c=.d)) \
 				$(addprefix $(DEPS_S_PATH), $(SRC_S:.c=.d))
 
-all: make_lib make_client make_server $(NAME)
+all: make_lib $(NAME)
 
 
 $(OB_C_PATH)%.o: $(SRCS_C_PATH)%.c | $(OB_C_PATH) $(DEPS_C_PATH)
@@ -53,7 +53,7 @@ $(OB_C_PATH)%.o: $(SRCS_C_PATH)%.c | $(OB_C_PATH) $(DEPS_C_PATH)
 	@mv $(OB_C_PATH)$(notdir $(basename $<)).d $(DEPS_C_PATH)
 
 
-make_client: $(OBJS_C)
+$(CLIENT): $(OBJS_C) $(LIB)
 	$(CC) $(CFLAGS) $(INCS) $(OBJS_C) -o $(CLIENT) $(LDFLAGS)
 	@echo "$(LIGHT_GREEN)Created $(CLIENT) executable$(DEF_COLOR)"
 
@@ -63,12 +63,12 @@ $(OB_S_PATH)%.o: $(SRCS_S_PATH)%.c | $(OB_S_PATH) $(DEPS_S_PATH)
 	@mv $(OB_S_PATH)$(notdir $(basename $<)).d $(DEPS_S_PATH)
 
 
-make_server: $(OBJS_S)
+$(SERVER): $(OBJS_S) $(LIB)
 	$(CC) $(CFLAGS) $(INCS) $(OBJS_S) -o $(SERVER) $(LDFLAGS)
 	@echo "$(LIGHT_GREEN)Created $(SERVER) executable$(DEF_COLOR)"
 
 
-$(NAME): $(CLIENT) $(SERVER)
+$(NAME): $(LIB)| $(CLIENT) $(SERVER)
 	@echo "$(GREEN)$(NAME) compiled!$(DEF_COLOR)"
 
 
