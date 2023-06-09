@@ -28,8 +28,6 @@ void	action(int sig, siginfo_t *info, void *context)
     static int current_pid = 0;
     static int nex_pid = 0;
     static int working_signal = 0;
-
-    //static int counter = 0;
     
     if (sig || context)
         ft_printf("");
@@ -48,18 +46,6 @@ void	action(int sig, siginfo_t *info, void *context)
         kill(info->si_pid, SIGUSR2);
     if (nex_pid)
         nex_pid = nex_pid;
-    
-      /*  
-    if (counter >= 10000 && nex_pid)
-    {
-        ft_printf("I am switching clients to serve\n");
-        ft_printf("Current %i Next %i\n", current_pid, nex_pid);
-        current_pid = nex_pid;
-        ft_printf("After change Current %i Next %i\n", current_pid, nex_pid);
-
-        counter = 0;
-        kill(current_pid, SIGUSR1);
-    }*/
 }
 
 int main(void)
@@ -74,8 +60,6 @@ int main(void)
     act.sa_flags = SA_SIGINFO;
     sigaction(SIGUSR1, &act, 0);
     sigaction(SIGUSR2, &act, 0);
-    ft_printf("Soy el Server\n");
-
     while (1)
         pause();
     return(0);

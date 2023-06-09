@@ -68,7 +68,7 @@ $(SERVER): $(OBJS_S) $(LIB)
 	@echo "$(LIGHT_GREEN)Created $(SERVER) executable$(DEF_COLOR)"
 
 
-$(NAME): $(LIB)| $(CLIENT) $(SERVER)
+$(NAME):  $(CLIENT) $(SERVER) $(LIB)
 	@echo "$(GREEN)$(NAME) compiled!$(DEF_COLOR)"
 
 
