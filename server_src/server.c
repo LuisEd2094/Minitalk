@@ -1,10 +1,12 @@
 #include "ft_printf.h"
 #include <signal.h>
 
+char buffer[10000];
 
 int work_on_signal(int sig, siginfo_t *info)
 {
 	static int				i = 0;
+    static int              buff_char = 0;
 	static unsigned char	c = 0;
 
 	if (sig == SIGUSR2)
@@ -14,13 +16,24 @@ int work_on_signal(int sig, siginfo_t *info)
 	i++;
 	if (i == 8)
 	{
-		ft_printf("%c", c);
-		i = 0;
-        if (c == '\0')
+        i = 0;
+        buffer[buff_char++] = c;
+
+        if (buff_char == 10000 || c == '\0')
         {
+            ft_printf("%s", buffer);
+            for (int i = 0; i < buffer[i]; i++) {
+                buffer[i] = 0; // Assign NULL to each element
+            }
+            buff_char = 0;
+            if (c == '\0')
+            {
+                c = 0;
+                buff_char = 0;
+                ft_printf("\nDone printing string from %i\n", info->si_pid);
+                return (0);
+            }
             c = 0;
-            ft_printf("\nDone printing string from %i\n", info->si_pid);
-            return (0);
         }
 		c = 0;
 	}
@@ -66,6 +79,7 @@ int main(void)
 {
     int     pid;
     struct sigaction act;
+
 
     pid = getpid();
     ft_printf("%i\n", pid);
