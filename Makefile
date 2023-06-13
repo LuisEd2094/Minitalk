@@ -19,7 +19,7 @@ DEPS_PATH	=	deps/
 DEPS_C_PATH	=	$(DEPS_PATH)client/
 DEPS_S_PATH	=	$(DEPS_PATH)server/
 DEPS_SHARED	=	$(DEPS_PATH)shared/
-INCS        =	-I$(LIB_PATH)/includes
+INCS        =	-I./include -I$(LIB_PATH)/includes
 
 #Colors
 
@@ -67,7 +67,7 @@ $(OB_C_PATH)%.o: $(SRCS_C_PATH)%.c | $(OB_C_PATH) $(DEPS_C_PATH)
 
 
 $(CLIENT): $(OBJS_C) $(OBJS_SHARED) $(LIB)
-	@$(CC) $(CFLAGS) $(INCS) $(OBJS_C) $(OBJS_SHARED) -o $(CLIENT) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(INCS) $(OBJS_C) $(OBJS_SHARED) -o $(CLIENT) $(LDFLAGS)
 	@echo "$(BLUE)Created $(CLIENT) executable$(DEF_COLOR)"
 
 $(OB_S_PATH)%.o: $(SRCS_S_PATH)%.c | $(OB_S_PATH) $(DEPS_S_PATH)
@@ -77,11 +77,12 @@ $(OB_S_PATH)%.o: $(SRCS_S_PATH)%.c | $(OB_S_PATH) $(DEPS_S_PATH)
 
 
 $(SERVER): $(OBJS_S) $(OBJS_SHARED) $(LIB)
-	@$(CC) $(CFLAGS) $(INCS) $(OBJS_S) $(OBJS_SHARED) -o $(SERVER) $(LDFLAGS)
+	$(CC) $(CFLAGS) $(INCS) $(OBJS_S) $(OBJS_SHARED) -o $(SERVER) $(LDFLAGS)
 	@echo "$(BLUE)Created $(SERVER) executable$(DEF_COLOR)"
 
 
 $(NAME): $(CLIENT) $(SERVER) $(LIB)
+	@echo "$(BLUE)Done$(DEF_COLOR)"
 
 
 $(OB_SHARED_P):

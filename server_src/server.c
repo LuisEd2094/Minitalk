@@ -1,7 +1,18 @@
 #include "ft_printf.h"
+#include "minitalk.h"
 #include <signal.h>
+#include <stdio.h>
 
 char buffer[10000];
+
+void    clear_buffer(void)
+{
+    int i;
+    
+    i = 0;
+    while (buffer[i])
+        buffer[i++] = 0;
+}
 
 int work_on_signal(int sig, siginfo_t *info)
 {
@@ -18,13 +29,10 @@ int work_on_signal(int sig, siginfo_t *info)
 	{
         i = 0;
         buffer[buff_char++] = c;
-
         if (buff_char == 10000 || c == '\0')
         {
             ft_printf("%s", buffer);
-            for (int i = 0; i < buffer[i]; i++) {
-                buffer[i] = 0; // Assign NULL to each element
-            }
+            clear_buffer();
             buff_char = 0;
             if (c == '\0')
             {
@@ -37,7 +45,11 @@ int work_on_signal(int sig, siginfo_t *info)
         }
 		c = 0;
 	}
-    kill(info->si_pid, SIGUSR1);
+    if (send_signal(info->si_pid, SIGUSR1) != 1)
+    {
+        ft_printf("Error, couldn't send signal to %i.\nServer is ready.", info->si_pid);
+        return (0);
+    }
     return (1);
 }
 
@@ -58,7 +70,12 @@ void	action(int sig, siginfo_t *info, void *context)
     else if (current_pid == info->si_pid && !working_signal)
     {
         working_signal = 1;
-        kill(current_pid, SIGUSR1);
+        if (send_signal(current_pid, SIGUSR1) != 1)
+        {
+            working_signal = 0;
+            ft_printf("Error, couldn't send signal to %i.\nServer is ready.", current_pid);
+            current_pid = 0;
+        }
     }
     else if (current_pid != info->si_pid)
         kill(info->si_pid, SIGUSR2);
@@ -80,11 +97,11 @@ int main(void)
     int     pid;
     struct sigaction act;
 
-
     pid = getpid();
-    ft_printf("%i\n", pid);
+    ft_printf("Server PID: %i\n", pid);
     act.sa_sigaction = action;
-    sigemptyset(&act.sa_mask); /// tis can throw error;
+    if (sigemptyset(&act.sa_mask) == -1)
+        perror("Error: "); /// tis can throw error;
     act.sa_flags = SA_SIGINFO;
     sigaction(SIGUSR1, &act, 0);
     sigaction(SIGUSR2, &act, 0);

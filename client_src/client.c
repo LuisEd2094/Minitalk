@@ -1,11 +1,11 @@
 #include "ft_printf.h"
 #include "libft.h"
+#include "minitalk.h"
 #include <signal.h>
 #include <errno.h>
 #include <stdio.h>
 
 char *g_str;
-
 
 void	char_to_bin(unsigned const c, int pid)
 {
@@ -18,8 +18,6 @@ void	char_to_bin(unsigned const c, int pid)
     if (++i == 8)
         i = 0;
 }
-
-
 
 void send_str(int sig, siginfo_t *info, void *contex)
 {
