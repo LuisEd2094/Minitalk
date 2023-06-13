@@ -38,7 +38,7 @@ int work_on_signal(int sig, siginfo_t *info)
             {
                 c = 0;
                 buff_char = 0;
-                ft_printf("\nDone printing string from %i\n", info->si_pid);
+                ft_printf("\nDone printing string from Client %i\n", info->si_pid);
                 return (0);
             }
             c = 0;
@@ -56,15 +56,15 @@ int work_on_signal(int sig, siginfo_t *info)
 void	action(int sig, siginfo_t *info, void *context)
 {
     static int current_pid = 0;
-    static int next_pid = 0;
+    //static int next_pid = 0;
     static int working_signal = 0;
     
     if (sig || context)
         ft_printf("");
     if (!current_pid)
         current_pid = info->si_pid;
-    else if (current_pid != info->si_pid)
-        next_pid = info->si_pid;
+    //else if (current_pid != info->si_pid)
+        //next_pid = info->si_pid;
     if (current_pid == info->si_pid && working_signal)
         working_signal = work_on_signal(sig, info);
     else if (current_pid == info->si_pid && !working_signal)
@@ -79,15 +79,15 @@ void	action(int sig, siginfo_t *info, void *context)
     }
     else if (current_pid != info->si_pid)
         kill(info->si_pid, SIGUSR2);
-    if (!working_signal && next_pid)
+    /*if (!working_signal && next_pid)
     {
         ft_printf("Sending confirmation to next\n");
         current_pid = next_pid;
         next_pid = 0;        
         working_signal = 1;
         kill(current_pid, SIGUSR1);
-    }
-    else if (!working_signal && current_pid)
+    }*/
+    if (!working_signal && current_pid)
         current_pid = 0;
 }
 

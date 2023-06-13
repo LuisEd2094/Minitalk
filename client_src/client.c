@@ -72,7 +72,12 @@ void	action(int sig, siginfo_t *info, void *context)
         send_str(sig, info, context);
     }
     else if (sig == SIGUSR2)
-        ft_printf("Waiting for server to be ready\n");
+    {
+        ft_printf("Server not ready, try again later\n");
+        exit (0);
+
+    }
+
 }
 
 int check_pid(char *argv)
