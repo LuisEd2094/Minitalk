@@ -85,7 +85,6 @@ void	action(int sig, siginfo_t *info, void *context)
         current_pid = next_pid;
         next_pid = 0;        
         working_signal = 1;
-        usleep(100);
         kill(current_pid, SIGUSR1);
     }
     else if (!working_signal && current_pid)
