@@ -8,14 +8,17 @@ RM          = 	rm -f
 LIB_PATH	= 	./Libft
 LIB			=	$(LIB_PATH)/libft.a
 LDFLAGS		= 	-L$(LIB_PATH) -lft
+SHARED_PATH	=	shared_src/
 SRCS_C_PATH	= 	client_src/
 SRCS_S_PATH	= 	server_src/
 OBJS_PATH	= 	obj/
 OB_C_PATH	= 	$(OBJS_PATH)client/
 OB_S_PATH	=	$(OBJS_PATH)server/
+OB_SHARED_P	=	$(OBJS_PATH)shared/
 DEPS_PATH	=	deps/
 DEPS_C_PATH	=	$(DEPS_PATH)client/
 DEPS_S_PATH	=	$(DEPS_PATH)server/
+DEPS_SHARED	=	$(DEPS_PATH)shared/
 INCS        =	-I$(LIB_PATH)/includes
 
 #Colors
@@ -37,39 +40,58 @@ SRC_C		=	client.c
 
 SRC_S		=	server.c 
 
+SHARED_SRC	=	send_signal.c
+
 OBJS_C		=	$(addprefix $(OB_C_PATH), $(SRC_C:.c=.o))
 
 OBJS_S		=	$(addprefix $(OB_S_PATH), $(SRC_S:.c=.o))
 
+OBJS_SHARED	=	$(addprefix $(OB_SHARED_P), $(SHARED_SRC:.c=.o))
+
 DEPS		=	$(addprefix $(DEPS_C_PATH), $(SRC_C:.c=.d)) \
-				$(addprefix $(DEPS_S_PATH), $(SRC_S:.c=.d))
+				$(addprefix $(DEPS_S_PATH), $(SRC_S:.c=.d)) \
+				$(addprefix $(DEPS_SHARED), $(SHARED_SRC:.c=.o))
 
 all: make_lib $(NAME)
 
 
+$(OB_SHARED_P)%.o: $(SHARED_PATH)%.c | $(OB_SHARED_P) $(DEPS_SHARED)
+	@echo "$(GREEN)Compiling $< $(DEF_COLOR)"
+	@$(CC) $(CFLAGS) $(INCS) -MMD -MP -c $< -o $@
+	@mv $(OB_SHARED_P)$(notdir $(basename $<)).d $(DEPS_SHARED)
+
 $(OB_C_PATH)%.o: $(SRCS_C_PATH)%.c | $(OB_C_PATH) $(DEPS_C_PATH)
 	@echo "$(GREEN)Compiling $< $(DEF_COLOR)"
-	$(CC) $(CFLAGS) $(INCS) -MMD -MP -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCS) -MMD -MP -c $< -o $@
 	@mv $(OB_C_PATH)$(notdir $(basename $<)).d $(DEPS_C_PATH)
 
 
-$(CLIENT): $(OBJS_C) $(LIB)
-	$(CC) $(CFLAGS) $(INCS) $(OBJS_C) -o $(CLIENT) $(LDFLAGS)
-	@echo "$(LIGHT_GREEN)Created $(CLIENT) executable$(DEF_COLOR)"
+$(CLIENT): $(OBJS_C) $(OBJS_SHARED) $(LIB)
+	@$(CC) $(CFLAGS) $(INCS) $(OBJS_C) $(OBJS_SHARED) -o $(CLIENT) $(LDFLAGS)
+	@echo "$(BLUE)Created $(CLIENT) executable$(DEF_COLOR)"
 
 $(OB_S_PATH)%.o: $(SRCS_S_PATH)%.c | $(OB_S_PATH) $(DEPS_S_PATH)
 	@echo "$(GREEN)Compiling $< $(DEF_COLOR)"
-	$(CC) $(CFLAGS) $(INCS) -MMD -MP -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCS) -MMD -MP -c $< -o $@
 	@mv $(OB_S_PATH)$(notdir $(basename $<)).d $(DEPS_S_PATH)
 
 
-$(SERVER): $(OBJS_S) $(LIB)
-	$(CC) $(CFLAGS) $(INCS) $(OBJS_S) -o $(SERVER) $(LDFLAGS)
-	@echo "$(LIGHT_GREEN)Created $(SERVER) executable$(DEF_COLOR)"
+$(SERVER): $(OBJS_S) $(OBJS_SHARED) $(LIB)
+	@$(CC) $(CFLAGS) $(INCS) $(OBJS_S) $(OBJS_SHARED) -o $(SERVER) $(LDFLAGS)
+	@echo "$(BLUE)Created $(SERVER) executable$(DEF_COLOR)"
 
 
-$(NAME):  $(CLIENT) $(SERVER) $(LIB)
-	@echo "$(GREEN)$(NAME) compiled!$(DEF_COLOR)"
+$(NAME): $(CLIENT) $(SERVER) $(LIB)
+
+
+$(OB_SHARED_P):
+	@echo "$(GREEN)Creating shared Obj Dir $(DEF_COLOR)"
+	@mkdir -p $(OB_SHARED_P)
+
+
+$(DEPS_SHARED):
+	@echo "$(GREEN)Creating shared Deps Dir $(DEF_COLOR)"
+	@mkdir -p $(DEPS_SHARED)
 
 
 $(DEPS_C_PATH):
@@ -91,7 +113,7 @@ $(OB_S_PATH):
 make_lib:
 	@echo "$(GREEN)Checking Libft$(DEF_COLOR)"
 	@$(MAKE) -s -C $(LIB_PATH)
-	@echo "$(BLUE)Done$(DEF_COLOR)"
+	@echo "$(BLUE)Done checking Libft$(DEF_COLOR)"
 	
 
 -include $(DEPS)

@@ -6,15 +6,6 @@
 
 char *g_str;
 
-void send_signal(int sig, int pid)
-{
-    if (kill(pid, sig) == -1)
-       {
-        ft_printf("Error\n");
-        perror(NULL);
-        exit(EXIT_FAILURE);
-       }
-}
 
 void	char_to_bin(unsigned const c, int pid)
 {
