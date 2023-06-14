@@ -14,7 +14,7 @@ void    clear_buffer(void)
         buffer[i++] = 0;
 }
 
-int work_on_signal(int sig, siginfo_t *info)
+int work_on_signal(int sig, siginfo_t *info, void *context)
 {
 	static int				i = 0;
     static int              buff_char = 0;
@@ -52,7 +52,7 @@ int work_on_signal(int sig, siginfo_t *info)
     }
     return (1);
 }
-
+/*
 void	action(int sig, siginfo_t *info, void *context)
 {
     static int current_pid = 0;
@@ -86,10 +86,10 @@ void	action(int sig, siginfo_t *info, void *context)
         next_pid = 0;        
         working_signal = 1;
         kill(current_pid, SIGUSR1);
-    }*/
+    }*//*
     if (!working_signal && current_pid)
         current_pid = 0;
-}
+}*/
 
 int main(void)
 {
@@ -98,7 +98,7 @@ int main(void)
 
     pid = getpid();
     ft_printf("Server PID: %i\n", pid);
-    act.sa_sigaction = action;
+    act.sa_sigaction = work_on_signal;
     if (sigemptyset(&act.sa_mask) == -1)
         perror("Error: "); /// tis can throw error;
     act.sa_flags = SA_SIGINFO;

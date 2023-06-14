@@ -75,7 +75,6 @@ void	action(int sig, siginfo_t *info, void *context)
     {
         ft_printf("Server not ready, try again later\n");
         exit (0);
-
     }
 
 }
@@ -104,7 +103,8 @@ int main(int argc, char **argv)
     server_pid = check_pid(argv[1]);
     g_str = argv[2];
     act.sa_sigaction = action;
-    sigemptyset(&act.sa_mask); /// tis can throw error;
+    if (sigemptyset(&act.sa_mask) == -1)
+        perror("Error: ");  /// tis can throw error;
     act.sa_flags = SA_SIGINFO;
     sigaction(SIGUSR1, &act, 0);
     sigaction(SIGUSR2, &act, 0);
