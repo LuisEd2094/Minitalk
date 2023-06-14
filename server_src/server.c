@@ -59,29 +59,29 @@ int work_on_signal(int sig, siginfo_t *info)
 
 void	action(int sig, siginfo_t *info, void *context)
 {
-    static int current_pid = 0;
+    //static int current_pid = 0;
     //static int next_pid = 0;
     static int working_signal = 0;
     
     if (sig || context)
         ft_printf("");
-    if (!current_pid)
-        current_pid = info->si_pid;
+    if (!g_server->client_pid)
+        g_server->client_pid = info->si_pid;
     //else if (current_pid != info->si_pid)
         //next_pid = info->si_pid;
-    if (current_pid == info->si_pid && working_signal)
+    if (g_server->client_pid == info->si_pid && working_signal)
         working_signal = work_on_signal(sig, info);
-    else if (current_pid == info->si_pid && !working_signal)
+    else if (g_server->client_pid == info->si_pid && !working_signal)
     {
         working_signal = 1;
-        if (send_signal(current_pid, SIGUSR1) != 1)
+        if (send_signal(g_server->client_pid, SIGUSR1) != 1)
         {
             working_signal = 0;
-            ft_printf("Error, couldn't send signal to %i.\nServer is ready.", current_pid);
-            current_pid = 0;
+            ft_printf("Error, couldn't send signal to %i.\nServer is ready.", g_server->client_pid);
+            g_server->client_pid = 0;
         }
     }
-    else if (current_pid != info->si_pid)
+    else if (g_server->client_pid != info->si_pid)
         kill(info->si_pid, SIGUSR2);
     /*if (!working_signal)
     {
@@ -90,8 +90,8 @@ void	action(int sig, siginfo_t *info, void *context)
         working_signal = 1;
         kill(current_pid, SIGUSR1);
     }*/
-    if (!working_signal && current_pid)
-        current_pid = 0;
+    if (!working_signal && g_server->client_pid)
+        g_server->client_pid = 0;
 }
 
 int main(void)
@@ -103,6 +103,7 @@ int main(void)
         printf("Failed to allocate memory for g_server\n");
         return 1;
     }
+    g_server->client_pid = 0;
     g_server->c = 0;
     clear_buffer();
     pid = getpid();
@@ -113,7 +114,15 @@ int main(void)
     act.sa_flags = SA_SIGINFO;
     sigaction(SIGUSR1, &act, 0);
     sigaction(SIGUSR2, &act, 0);
-    while (1)
-        pause();
+    while(1)
+    {
+        sleep(5);
+        if (g_server->client_pid)
+        {
+            if (send_signal(g_server->client_pid, 0) != 1)
+                exit(-1);
+        }
+
+    }
     return(0);
 }
