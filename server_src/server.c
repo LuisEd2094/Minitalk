@@ -1,49 +1,53 @@
 #include "ft_printf.h"
 #include "minitalk.h"
+#include "server.h"
 #include <signal.h>
 #include <stdio.h>
 
 char buffer[10000];
+t_server *g_server;
 
 void    clear_buffer(void)
 {
     int i;
     
     i = 0;
-    while (buffer[i])
-        buffer[i++] = 0;
+    while (i < 1001)
+        g_server->buffer[i++] = 0;
 }
 
-int work_on_signal(int sig, siginfo_t *info, void *context)
+int work_on_signal(int sig, siginfo_t *info)
 {
 	static int				i = 0;
     static int              buff_char = 0;
-	static unsigned char	c = 0;
 
+   // if (context)
+        //ft_printf("");
+    //context = "";
 	if (sig == SIGUSR2)
-		c = c << 1;
+		g_server->c = g_server->c << 1;
 	else if (sig == SIGUSR1)
-		c = (c << 1) | 0b00000001;
+		g_server->c = (g_server->c << 1) | 0b00000001;
 	i++;
 	if (i == 8)
 	{
         i = 0;
-        buffer[buff_char++] = c;
-        if (buff_char == 10000 || c == '\0')
+        g_server->buffer[buff_char++] = g_server->c;
+        if (buff_char == 1000 || g_server->c == '\0')
         {
-            ft_printf("%s", buffer);
+            ft_printf("%s", g_server->buffer);
             clear_buffer();
             buff_char = 0;
-            if (c == '\0')
+            if (g_server->c == '\0')
             {
-                c = 0;
+                g_server->c = 0;
                 buff_char = 0;
                 ft_printf("\nDone printing string from Client %i\n", info->si_pid);
-                return (0);
+                return(0);
             }
-            c = 0;
+            g_server->c = 0;
         }
-		c = 0;
+		g_server->c = 0;
 	}
     if (send_signal(info->si_pid, SIGUSR1) != 1)
     {
@@ -52,7 +56,7 @@ int work_on_signal(int sig, siginfo_t *info, void *context)
     }
     return (1);
 }
-/*
+
 void	action(int sig, siginfo_t *info, void *context)
 {
     static int current_pid = 0;
@@ -79,26 +83,31 @@ void	action(int sig, siginfo_t *info, void *context)
     }
     else if (current_pid != info->si_pid)
         kill(info->si_pid, SIGUSR2);
-    /*if (!working_signal && next_pid)
+    /*if (!working_signal)
     {
         ft_printf("Sending confirmation to next\n");
-        current_pid = next_pid;
-        next_pid = 0;        
+    
         working_signal = 1;
         kill(current_pid, SIGUSR1);
-    }*//*
+    }*/
     if (!working_signal && current_pid)
         current_pid = 0;
-}*/
+}
 
 int main(void)
 {
     int     pid;
     struct sigaction act;
-
+    g_server = (t_server*)malloc(sizeof(t_server));
+    if (g_server == NULL) {
+        printf("Failed to allocate memory for g_server\n");
+        return 1;
+    }
+    g_server->c = 0;
+    clear_buffer();
     pid = getpid();
     ft_printf("Server PID: %i\n", pid);
-    act.sa_sigaction = work_on_signal;
+    act.sa_sigaction = action;
     if (sigemptyset(&act.sa_mask) == -1)
         perror("Error: "); /// tis can throw error;
     act.sa_flags = SA_SIGINFO;

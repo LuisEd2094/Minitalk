@@ -20,8 +20,8 @@ DEPS_C_PATH	=	$(DEPS_PATH)client/
 DEPS_S_PATH	=	$(DEPS_PATH)server/
 DEPS_SHARED	=	$(DEPS_PATH)shared/
 INCS        =	-I./include/shared -I$(LIB_PATH)/includes
-INCS_CL		=	-I./include/client
-INCS_SR		=	-I./include/server
+INCS_CL		=	-I./include/client_inc
+INCS_SR		=	-I./include/server_inc
 
 
 #Colors
@@ -75,7 +75,7 @@ $(CLIENT): $(OBJS_C) $(OBJS_SHARED) $(LIB)
 
 $(OB_S_PATH)%.o: $(SRCS_S_PATH)%.c | $(OB_S_PATH) $(DEPS_S_PATH)
 	@echo "$(GREEN)Compiling $< $(DEF_COLOR)"
-	@$(CC) $(CFLAGS) $(INCS) -MMD -MP -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCS) $(INCS_SR) -MMD -MP -c $< -o $@
 	@mv $(OB_S_PATH)$(notdir $(basename $<)).d $(DEPS_S_PATH)
 
 
