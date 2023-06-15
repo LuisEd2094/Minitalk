@@ -4,7 +4,7 @@
 typedef struct t_server_s
 {
     char    c;
-    char    buffer[1001];
+    char    buffer[10001];
     int     client_pid;
 } t_server;
 

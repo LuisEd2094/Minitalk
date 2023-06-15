@@ -30,7 +30,8 @@ void send_str(int sig, siginfo_t *info, void *contex)
     static int bit = 0;
 
     if (contex)
-        contex = contex;
+        ft_printf("");
+    usleep(10);
     if (sig == SIGUSR1)
     {
         if (g_str[i])
@@ -61,7 +62,7 @@ void	action(int sig, siginfo_t *info, void *context)
     struct sigaction act;
 
     if (context || info)
-        ft_printf("", SIGUSR2, SIGUSR1);
+        ft_printf("");
     if (sig == SIGUSR1) // valid signal
     {
         ft_printf("Server ready! Sending message!\n");

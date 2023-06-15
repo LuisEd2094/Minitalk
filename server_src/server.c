@@ -4,7 +4,6 @@
 #include <signal.h>
 #include <stdio.h>
 
-char buffer[10000];
 t_server *g_server;
 
 void    clear_buffer(void)
@@ -12,7 +11,7 @@ void    clear_buffer(void)
     int i;
     
     i = 0;
-    while (i < 1001)
+    while (i < 10001)
         g_server->buffer[i++] = 0;
 }
 
@@ -33,7 +32,7 @@ int work_on_signal(int sig, siginfo_t *info)
 	{
         i = 0;
         g_server->buffer[buff_char++] = g_server->c;
-        if (buff_char == 1000 || g_server->c == '\0')
+        if (buff_char == 10000 || g_server->c == '\0')
         {
             ft_printf("%s", g_server->buffer);
             clear_buffer();
@@ -49,6 +48,7 @@ int work_on_signal(int sig, siginfo_t *info)
         }
 		g_server->c = 0;
 	}
+    usleep(10);
     if (send_signal(info->si_pid, SIGUSR1) != 1)
     {
         ft_printf("Error, couldn't send signal to %i.\nServer is ready.", info->si_pid);
@@ -90,6 +90,7 @@ void	action(int sig, siginfo_t *info, void *context)
         working_signal = 1;
         kill(current_pid, SIGUSR1);
     }*/
+
     if (!working_signal && g_server->client_pid)
         g_server->client_pid = 0;
 }
