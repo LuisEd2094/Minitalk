@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 {
     struct sigaction act;
 
-    if (argc != 1 && !argv)
+    if (argc != 1 && argv)
         error_handle(3);
     g_server = (t_server*)malloc(sizeof(t_server));
     if (g_server == NULL)
