@@ -31,9 +31,10 @@ void    handle_sig (int sig, char *c)
 
 void    str_done(siginfo_t *info)
 {
+    getpid();
     set_g_vals();
-    ft_printf("\nDone printing string from Client %i\n",\
-     info->si_pid);
+    ft_printf("\nDone printing string from Client %i\nMy pid is: %i\n",\
+     info->si_pid, getpid());
 }
 
 int error_handle(int error)

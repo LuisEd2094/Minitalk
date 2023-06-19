@@ -17,6 +17,7 @@ void send_str(int sig, siginfo_t *info, void *contex)
     static int bit = 0;
 
     (void)contex;
+    usleep(50);
     if (sig == SIGUSR1)
     {
         if (g_str[i])
