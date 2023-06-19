@@ -16,5 +16,19 @@ void    exit_failure(int server_pid, int error)
         ft_printf("Server %i is no longer reachable, exiting!\n", server_pid);
     else if (error == 6)
         ft_printf("Failed to set empty sig, exiting\n");
+    else if (error == 7)
+        ft_printf("Server not ready, try again later\n");
     exit(0);
+}
+
+void    exit_success(void)
+{
+    ft_printf("Done printing string, exiting\n");
+    exit(0);
+}
+
+void update_vals (int *bit, int *i)
+{
+    *bit = 0;
+    *i += 1;
 }

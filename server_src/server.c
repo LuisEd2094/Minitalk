@@ -40,7 +40,7 @@ void work_on_signal(int sig, siginfo_t *info)
         }
 		g_server->c = 0;
 	}
-    usleep(10);
+    usleep(50);
     if (send_signal(info->si_pid, SIGUSR1) != 1)
         if_failed(info);
 }

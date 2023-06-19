@@ -10,7 +10,6 @@
 
 char *g_str;
 
-
 void	char_to_bin(unsigned const c, int pid)
 {
     static char i = 0;
@@ -31,43 +30,31 @@ void send_str(int sig, siginfo_t *info, void *contex)
     static int i = 0;
     static int bit = 0;
 
-    if (contex)
-        ft_printf("");
-    usleep(10);
+    (void)contex;
     if (sig == SIGUSR1)
     {
         if (g_str[i])
         {
             if (bit++ < 8)
-            {
                 char_to_bin(g_str[i], info->si_pid);
-            }
             if (bit == 8)
-            {
-                bit = 0;
-                i++;
-            }
+                update_vals(&bit, &i);
         }
         else if(!g_str[i])
         {
             if (bit++ < 8)
                 char_to_bin(g_str[i], info->si_pid);
             if (bit == 8)
-            {
-                ft_printf("Done printing string, exiting\n");
-                exit(0);
-            }
+                exit_success();
         }        
     }
-
 }
 
 void	action(int sig, siginfo_t *info, void *context)
 {
     struct sigaction act;
 
-    if (context || info)
-        ft_printf("");
+    (void)context;
     if (sig == SIGUSR1) // valid signal
     {
         ft_printf("Server ready! Sending message!\n");
@@ -78,11 +65,7 @@ void	action(int sig, siginfo_t *info, void *context)
         send_str(sig, info, context);
     }
     else if (sig == SIGUSR2)
-    {
-        ft_printf("Server not ready, try again later\n");
-        exit (0);
-    }
-
+        exit_failure(0, 7);
 }
 
 int check_pid(char *argv)
