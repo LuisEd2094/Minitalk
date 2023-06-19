@@ -15,19 +15,14 @@ void    clear_buffer(void)
         g_server->buffer[i++] = 0;
 }
 
-void    set_g_vals(void)
-{
-    g_server->buff_char = 0;
-    g_server->client_pid = 0;
-    g_server->working = 0;
-    g_server->c = 0;
-    clear_buffer();
-}
-
 int work_on_signal(int sig, siginfo_t *info)
 {
 	static int				i = 0;
+    static int              buff_char = 0;
 
+   // if (context)
+        //ft_printf("");
+    //context = "";
 	if (sig == SIGUSR2)
 		g_server->c = g_server->c << 1;
 	else if (sig == SIGUSR1)
@@ -36,15 +31,16 @@ int work_on_signal(int sig, siginfo_t *info)
 	if (i == 8)
 	{
         i = 0;
-        g_server->buffer[g_server->buff_char++] = g_server->c;
-        if (g_server->buff_char == 10000 || g_server->c == '\0')
+        g_server->buffer[buff_char++] = g_server->c;
+        if (buff_char == 10000 || g_server->c == '\0')
         {
             ft_printf("%s", g_server->buffer);
             clear_buffer();
-            g_server->buff_char = 0;
+            buff_char = 0;
             if (g_server->c == '\0')
             {
-                set_g_vals();
+                g_server->c = 0;
+                buff_char = 0;
                 ft_printf("\nDone printing string from Client %i\n", info->si_pid);
                 return(0);
             }
@@ -62,28 +58,42 @@ int work_on_signal(int sig, siginfo_t *info)
 }
 
 void	action(int sig, siginfo_t *info, void *context)
-{    
-    (void)context;
+{
+    //static int current_pid = 0;
+    //static int next_pid = 0;
+    static int working_signal = 0;
+    
+    if (sig || context)
+        ft_printf("");
     if (!g_server->client_pid)
         g_server->client_pid = info->si_pid;
-    if (g_server->client_pid == info->si_pid && g_server->working)
-        g_server->working = work_on_signal(sig, info);
-    else if (g_server->client_pid == info->si_pid && !g_server->working)
+    //else if (current_pid != info->si_pid)
+        //next_pid = info->si_pid;
+    if (g_server->client_pid == info->si_pid && working_signal)
+        working_signal = work_on_signal(sig, info);
+    else if (g_server->client_pid == info->si_pid && !working_signal)
     {
-        g_server->working = 1;
+        working_signal = 1;
         if (send_signal(g_server->client_pid, SIGUSR1) != 1)
         {
+            working_signal = 0;
             ft_printf("Error, couldn't send signal to %i.\nServer is ready.", g_server->client_pid);
-            set_g_vals();
+            g_server->client_pid = 0;
         }
     }
     else if (g_server->client_pid != info->si_pid)
         kill(info->si_pid, SIGUSR2);
-    if (!g_server->working && g_server->client_pid)
+    /*if (!working_signal)
+    {
+        ft_printf("Sending confirmation to next\n");
+    
+        working_signal = 1;
+        kill(current_pid, SIGUSR1);
+    }*/
+
+    if (!working_signal && g_server->client_pid)
         g_server->client_pid = 0;
 }
-
-
 
 int main(void)
 {
@@ -94,7 +104,9 @@ int main(void)
         printf("Failed to allocate memory for g_server\n");
         return 1;
     }
-    set_g_vals();
+    g_server->client_pid = 0;
+    g_server->c = 0;
+    clear_buffer();
     pid = getpid();
     ft_printf("Server PID: %i\n", pid);
     act.sa_sigaction = action;
@@ -106,11 +118,12 @@ int main(void)
     while(1)
     {
         sleep(5);
-        if (g_server->client_pid && send_signal(g_server->client_pid, 0) != 1)
+        if (g_server->client_pid)
         {
-                set_g_vals();
-                ft_printf("Server is ready for a new client\n");
+            if (send_signal(g_server->client_pid, 0) != 1)
+                exit(-1);
         }
+
     }
     return(0);
 }
