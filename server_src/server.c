@@ -84,21 +84,46 @@ void main_loop(void)
     }
 }
 
-int main(void)
+struct sigaction create_action(void (*handler)(int))
 {
     struct sigaction act;
 
+    act.sa_flags = SA_SIGINFO;
+    act.sa_handler = handler;
+
+    if (sigemptyset(&act.sa_mask) == -1) {
+        perror("sigemptyset");
+        exit(1);
+    }
+
+    return act;
+
+}
+void handle_sigint(int signum) {
+    // Handle SIGINT signal
+    printf("Received SIGINT signal.\n");
+    // Perform any necessary cleanup or actions
+    // ...
+    exit(signum);
+}
+
+int main(int argc, char *argv[])
+{
+    struct sigaction act;
+
+    if (argc != 1 && argv)
+        error_handle(3);
     g_server = (t_server*)malloc(sizeof(t_server));
     if (g_server == NULL)
         error_handle(2);
     set_g_vals();
-
     act.sa_sigaction = action;
     if (sigemptyset(&act.sa_mask) == -1)
         error_handle(1); /// tis can throw error;
     act.sa_flags = SA_SIGINFO;
-    sigaction(SIGUSR1, &act, 0);
+    sigaction(SIGUSR1, &act, 0); // error
     sigaction(SIGUSR2, &act, 0);
+    act = create_action(handle_sigint);
     main_loop();
     return(0);
 }

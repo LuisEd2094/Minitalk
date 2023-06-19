@@ -42,5 +42,7 @@ int error_handle(int error)
         ft_printf("Failed to set empty sig, exiting\n");
     else if (error == 2)
         ft_printf("Failed to allocate memory for g_server\n");
+    else if (error == 3)
+        ft_printf("Incorrect usage, just run ./server to start the server\n");
     exit (1);
 }
