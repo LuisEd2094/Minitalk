@@ -4,7 +4,7 @@
 void    exit_failure(int server_pid, int error);
 void update_vals (int *bit, int *i);
 void    exit_success(void);
-void    char_to_bin(unsigned const c, int pid);
+void    char_to_bin(unsigned const char c, int pid);
 int check_pid(char *argv);
 
 #endif
