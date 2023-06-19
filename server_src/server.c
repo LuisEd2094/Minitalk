@@ -21,21 +21,20 @@ void    set_g_vals(void)
     g_server->client_pid = 0;
     g_server->working = 0;
     g_server->c = 0;
+    g_server->i = 0;
     clear_buffer();
 }
 
 int work_on_signal(int sig, siginfo_t *info)
 {
-	static int				i = 0;
-
 	if (sig == SIGUSR2)
 		g_server->c = g_server->c << 1;
 	else if (sig == SIGUSR1)
 		g_server->c = (g_server->c << 1) | 0b00000001;
-	i++;
-	if (i == 8)
+	g_server->i++;
+	if (g_server->i == 8)
 	{
-        i = 0;
+        g_server->i = 0;
         g_server->buffer[g_server->buff_char++] = g_server->c;
         if (g_server->buff_char == 10000 || g_server->c == '\0')
         {

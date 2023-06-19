@@ -8,6 +8,7 @@ typedef struct t_server_s
     int     buff_char;
     int     client_pid;
     int     working;
+    int     i;
 } t_server;
 
 #endif
