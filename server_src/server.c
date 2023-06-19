@@ -67,7 +67,11 @@ void	action(int sig, siginfo_t *info, void *context)
 }
 
 void main_loop(void)
-{
+{    
+    int     pid;
+    
+    pid = getpid();
+    ft_printf("Server PID: %i\n", pid);
     while(1)
     {
         sleep(3);
@@ -82,20 +86,16 @@ void main_loop(void)
 
 int main(void)
 {
-    int     pid;
     struct sigaction act;
 
     g_server = (t_server*)malloc(sizeof(t_server));
-    if (g_server == NULL) {
-        printf("Failed to allocate memory for g_server\n");
-        return (1);
-    }
+    if (g_server == NULL)
+        error_handle(2);
     set_g_vals();
-    pid = getpid();
-    ft_printf("Server PID: %i\n", pid);
+
     act.sa_sigaction = action;
     if (sigemptyset(&act.sa_mask) == -1)
-        perror("Error: "); /// tis can throw error;
+        error_handle(1); /// tis can throw error;
     act.sa_flags = SA_SIGINFO;
     sigaction(SIGUSR1, &act, 0);
     sigaction(SIGUSR2, &act, 0);

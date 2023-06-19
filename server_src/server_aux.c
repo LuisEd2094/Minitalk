@@ -32,6 +32,15 @@ void    handle_sig (int sig, char *c)
 void    str_done(siginfo_t *info)
 {
     set_g_vals();
-    ft_printf("\nDone printing string from \
-    Client %i\n", info->si_pid);
+    ft_printf("\nDone printing string from Client %i\n",\
+     info->si_pid);
+}
+
+int error_handle(int error)
+{
+    if (error == 1)
+        ft_printf("Failed to set empty sig, exiting\n");
+    else if (error == 2)
+        ft_printf("Failed to allocate memory for g_server\n");
+    exit (1);
 }

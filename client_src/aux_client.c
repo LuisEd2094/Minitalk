@@ -14,5 +14,7 @@ void    exit_failure(int server_pid, int error)
         ft_printf("Exiting after failing to send signal to server.\n");
     else if (error == 5)
         ft_printf("Server %i is no longer reachable, exiting!\n", server_pid);
+    else if (error == 6)
+        ft_printf("Failed to set empty sig, exiting\n");
     exit(0);
 }

@@ -18,4 +18,5 @@ void    if_failed (siginfo_t *info);
 void    set_g_vals(void);
 void    handle_sig (int sig, char *c);
 void    str_done(siginfo_t * info);
+int     error_handle(int error);
 #endif

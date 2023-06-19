@@ -103,14 +103,14 @@ int main(int argc, char **argv)
     int server_pid ;
     struct sigaction act;
 
-    ft_printf("Client PID %i\n", getpid());
     if (argc != 3)
         exit_failure(0, 3);
+    ft_printf("Client PID %i\n", getpid());
     server_pid = check_pid(argv[1]);
     g_str = argv[2];
     act.sa_sigaction = action;
     if (sigemptyset(&act.sa_mask) == -1)
-        perror("Error: ");  /// tis can throw error;
+        exit_failure(0, 6);
     act.sa_flags = SA_SIGINFO;
     sigaction(SIGUSR1, &act, 0);
     sigaction(SIGUSR2, &act, 0);
@@ -122,5 +122,4 @@ int main(int argc, char **argv)
         if (send_signal(server_pid, 0) != 1)
             exit_failure(server_pid, 5);
     }
-
 }
