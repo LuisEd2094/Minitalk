@@ -116,7 +116,7 @@ int main(int argc, char **argv)
         exit_failure(server_pid, 1);
     while(1)
     {
-        sleep(5);
+        sleep(3);
         if (send_signal(server_pid, 0) != 1)
             exit_failure(server_pid, 5);
     }

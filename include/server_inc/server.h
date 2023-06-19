@@ -1,5 +1,6 @@
 #ifndef SERVER_H
 # define SERVER_H
+# include <signal.h>
 
 typedef struct t_server_s
 {
@@ -10,5 +11,13 @@ typedef struct t_server_s
     int     working;
     int     i;
 } t_server;
+
+
+void    clear_buffer(char *buffer);
+void    if_failed (siginfo_t *info);
+void    set_g_vals(void);
+void    handle_sig (int sig, char *c);
+
+
 
 #endif

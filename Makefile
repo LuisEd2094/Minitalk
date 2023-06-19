@@ -41,7 +41,7 @@ LIGHT_GREEN = \033[1;92m
 
 SRC_C		=	client.c aux_client.c
 
-SRC_S		=	server.c 
+SRC_S		=	server.c  server_aux.c
 
 SHARED_SRC	=	send_signal.c
 
