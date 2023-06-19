@@ -1,3 +1,4 @@
+
 #include "ft_printf.h"
 #include "minitalk.h"
 #include "server.h"
@@ -29,9 +30,8 @@ void work_on_signal(int sig, siginfo_t *info)
         {
             ft_printf("%s", g_server->buffer);
             if (g_server->c == '\0')
-            {
-                set_g_vals();
-                ft_printf("\nDone printing string from Client %i\n", info->si_pid);
+            {   
+                str_done(info);
                 return ; 
             }
             g_server->buff_char = 0;
@@ -71,7 +71,8 @@ void main_loop(void)
     while(1)
     {
         sleep(3);
-        if (g_server->client_pid && send_signal(g_server->client_pid, 0) != 1)
+        if (g_server->client_pid && \
+        send_signal(g_server->client_pid, 0) != 1)
         {
             set_g_vals();
             ft_printf("Server is ready for a new client\n");

@@ -1,3 +1,4 @@
+
 #include "ft_printf.h"
 #include "minitalk.h"
 #include "server.h"
@@ -7,7 +8,8 @@
 void if_failed (siginfo_t *info)
 {
     set_g_vals();
-    ft_printf("Error, couldn't send signal to %i.\nServer is ready.", info->si_pid);
+    ft_printf("Error, couldn't send signal to %i\
+    .\nServer is ready.", info->si_pid);
 }
 
 void    clear_buffer(char *buffer)
@@ -19,10 +21,17 @@ void    clear_buffer(char *buffer)
         buffer[i++] = 0;
 }
 
-void    ihandle_sig (int sig, char *c)
+void    handle_sig (int sig, char *c)
 {
     if (sig == SIGUSR2)
 		*c = *c << 1;
 	else if (sig == SIGUSR1)
 		*c = (*c << 1) | 0b00000001;
+}
+
+void    str_done(siginfo_t *info)
+{
+    set_g_vals();
+    ft_printf("\nDone printing string from \
+    Client %i\n", info->si_pid);
 }

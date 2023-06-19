@@ -17,7 +17,5 @@ void    clear_buffer(char *buffer);
 void    if_failed (siginfo_t *info);
 void    set_g_vals(void);
 void    handle_sig (int sig, char *c);
-
-
-
+void    str_done(siginfo_t * info);
 #endif
