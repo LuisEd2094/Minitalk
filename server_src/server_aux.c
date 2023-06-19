@@ -44,5 +44,9 @@ int error_handle(int error)
         ft_printf("Failed to allocate memory for g_server\n");
     else if (error == 3)
         ft_printf("Incorrect usage, just run ./server to start the server\n");
+    else if (error == 4)
+        ft_printf("Coulnd't set SIGUSR1, exiting\n");
+    else if (error == 5)
+        ft_printf("Coulnd't set SIGUSR2, exiting\n");
     exit (1);
 }

@@ -10,20 +10,6 @@
 
 char *g_str;
 
-void	char_to_bin(unsigned const c, int pid)
-{
-    static char i = 0;
-    int sig;
-
-	if (c << i & 0b10000000)
-		sig = send_signal(pid, SIGUSR1);
-	else
-		sig = send_signal(pid, SIGUSR2);
-    if (sig != 1)
-        exit_failure(0, 4);
-    if (++i == 8)
-        i = 0;
-}
 
 void send_str(int sig, siginfo_t *info, void *contex)
 {
@@ -59,26 +45,25 @@ void	action(int sig, siginfo_t *info, void *context)
     {
         ft_printf("Server ready! Sending message!\n");
         act.sa_sigaction = send_str; // printer?
-        sigaddset(&act.sa_mask, SIGUSR1); /// tis can throw error;
+        if (sigaddset(&act.sa_mask, SIGUSR1) == -1)
+            exit_failure(0, 8); /// tis can throw error;
         act.sa_flags = SA_SIGINFO;
-        sigaction(SIGUSR1, &act, 0);
+        if (sigaction(SIGUSR1, &act, 0) == -1)
+            exit_failure(0, 8);
         send_str(sig, info, context);
     }
     else if (sig == SIGUSR2)
         exit_failure(0, 7);
 }
 
-int check_pid(char *argv)
+void main_loop(int server_pid)
 {
-    int i;
-
-    i = 0;
-    while (argv[i])
+    while(1)
     {
-        if (!ft_isdigit(argv[i++]))
-            exit_failure(0, 2);
+        sleep(3);
+        if (send_signal(server_pid, 0) != 1)
+            exit_failure(server_pid, 5);
     }
-    return (ft_atoi(argv));
 }
 
 int main(int argc, char **argv)
@@ -95,14 +80,11 @@ int main(int argc, char **argv)
     if (sigemptyset(&act.sa_mask) == -1)
         exit_failure(0, 6);
     act.sa_flags = SA_SIGINFO;
-    sigaction(SIGUSR1, &act, 0);
-    sigaction(SIGUSR2, &act, 0);
+    if (sigaction(SIGUSR1, &act, 0) == -1)
+        exit_failure(0, 8);
+    if (sigaction(SIGUSR2, &act, 0) == -1)
+        exit_failure(0, 9);
     if (send_signal(server_pid, SIGUSR1) != 1)
         exit_failure(server_pid, 1);
-    while(1)
-    {
-        sleep(3);
-        if (send_signal(server_pid, 0) != 1)
-            exit_failure(server_pid, 5);
-    }
+    main_loop(server_pid);
 }
