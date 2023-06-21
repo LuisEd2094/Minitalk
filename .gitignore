@@ -3,3 +3,6 @@ deps/
 client
 server
 Libft/
+
+client_bonus
+server_bonus
