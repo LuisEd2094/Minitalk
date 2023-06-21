@@ -3,6 +3,8 @@
 NAME		=	Minitalk
 CLIENT		= 	client
 SERVER		=	server
+NAME_BCL	=	client_bonus
+NAME_BSR	=	server_bonus
 CFLAGS      = 	-Wall -Wextra  -Werror
 RM          = 	rm -f
 LIB_PATH	= 	./Libft
@@ -83,7 +85,8 @@ DEPS_BONUS	=	$(addprefix $(DEPS_C_PATH), $(BONUS_C:.c=.d)) \
 
 all: make_lib $(NAME)
 
-bonus: make_lib $(NAME)_bonus
+bonus: make_lib $(NAME_BCL) $(NAME_BSR)
+	@echo "$(BLUE)Done$(DEF_COLOR)"
 
 
 make_lib:
@@ -92,9 +95,8 @@ make_lib:
 	@echo "$(BLUE)Done checking Libft$(DEF_COLOR)"
 
 ## Make Client Bonus ##
-$(CLIENT)_bonus: $(OBJS_C_B) $(OBJS_SH_B) $(LIB)
-	@echo "$(BONUS_C) $(OBJS_C_B) $(OBJS_SH_B)"
-	$(CC) $(CFLAGS) $(INCS) $(INCS_CL) $(OBJS_C_B) $(OBJS_SH_B) -o $(CLIENT)_bonus $(LDFLAGS)
+$(NAME_BCL): $(OBJS_C_B) $(OBJS_SH_B) $(LIB)
+	$(CC) $(CFLAGS) $(INCS) $(INCS_CL) $(OBJS_C_B) $(OBJS_SH_B) -o $(NAME_BCL) $(LDFLAGS)
 	@echo "$(BLUE)Created $(CLIENT) executable with Bonus files$(DEF_COLOR)"
 
 
@@ -104,8 +106,19 @@ $(OB_C_PATH)%_bonus.o: $(SRCS_C_PATH)%_bonus.c | $(OB_C_PATH) $(DEPS_C_PATH)
 	@mv $(OB_C_PATH)$(notdir $(basename $<)).d $(DEPS_C_PATH)
 
 
+$(NAME_BSR): $(OBJS_S_B) $(OBJS_SH_B) $(LIB)
+	$(CC) $(CFLAGS) $(INCS) $(INCS_SR) $(OBJS_S_B) $(OBJS_SH_B) -o $(NAME_BSR) $(LDFLAGS)
+	@echo "$(BLUE)Created $(SERVER) executable with Bonus files$(DEF_COLOR)"
 
-$(NAME)_bonus: $(CLIENT)_bonus
+$(OB_S_PATH)%.o: $(SRCS_S_PATH)%.c | $(OB_S_PATH) $(DEPS_S_PATH)
+	@echo "$(GREEN)Compiling $< $(DEF_COLOR)"
+	@$(CC) $(CFLAGS) $(INCS) $(INCS_SR) -MMD -MP -c $< -o $@
+	@mv $(OB_S_PATH)$(notdir $(basename $<)).d $(DEPS_S_PATH)
+
+
+
+
+## ORDES TO MAKE ALL ##
 
 
 $(OB_SHARED_P)%.o: $(SHARED_PATH)%.c | $(OB_SHARED_P) $(DEPS_SHARED)
@@ -134,6 +147,10 @@ $(SERVER): $(OBJS_S) $(OBJS_SHARED) $(LIB)
 
 $(NAME): $(CLIENT) $(SERVER) $(LIB) 
 	@echo "$(BLUE)Done$(DEF_COLOR)"
+
+
+
+## CREATE ALL DIRECTORIES ##
 
 
 $(OB_SHARED_P):
