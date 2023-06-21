@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 #include "ft_printf.h"
 #include "libft.h"
-#include "minitalk.h"
-#include "client.h"
+#include "minitalk_bonus.h"
+#include "client_bonus.h"
 #include <signal.h>
 #include <errno.h>
 #include <stdio.h>
@@ -25,7 +25,7 @@ void	exit_failure(int server_pid, int error)
 		ft_printf("Invalid argument value for PID, \
 				please introduce server's PID\n");
 	else if (error == 3)
-		ft_printf("Inorrect use. Run ./server, get server PID, run \
+		ft_printf("Incorrect use. Run ./server, get server PID, run \
 		./client <server PID> <String to print>\n");
 	else if (error == 4)
 		ft_printf("Exiting after failing to send signal to server.\n");

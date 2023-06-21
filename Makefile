@@ -37,7 +37,7 @@ CYAN = \033[0;96m
 WHITE = \033[0;97m
 LIGHT_GREEN = \033[1;92m
 
-###
+### FOR ALL ##
 
 SRC_C		=	client.c aux_client.c
 
@@ -45,17 +45,67 @@ SRC_S		=	server.c  server_aux.c
 
 SHARED_SRC	=	send_signal.c
 
+## SRCS FOR BONUS ##
+
+BONUS_C		=	$(SRC_C:.c=_bonus.c)
+
+BONUS_S		=	$(SRC_S:.c=_bonus.c)
+
+BONUS_SH	=	$(SHARED_SRC:.c=_bonus.c)
+
+## OBJS FOR ALL ##
+
 OBJS_C		=	$(addprefix $(OB_C_PATH), $(SRC_C:.c=.o))
 
 OBJS_S		=	$(addprefix $(OB_S_PATH), $(SRC_S:.c=.o))
 
 OBJS_SHARED	=	$(addprefix $(OB_SHARED_P), $(SHARED_SRC:.c=.o))
 
+## OBJS FOR BONUS ##
+
+OBJS_C_B	=	$(addprefix $(OB_C_PATH), $(BONUS_C:.c=.o))
+
+OBJS_S_B	=	$(addprefix $(OB_S_PATH), $(BONUS_S:.c=.o))
+
+OBJS_SH_B	=	$(addprefix $(OB_SHARED_P), $(BONUS_SH:.c=.o))
+
+## DEPS FOR ALL ##
+
 DEPS		=	$(addprefix $(DEPS_C_PATH), $(SRC_C:.c=.d)) \
 				$(addprefix $(DEPS_S_PATH), $(SRC_S:.c=.d)) \
 				$(addprefix $(DEPS_SHARED), $(SHARED_SRC:.c=.o))
 
+## DEPS FOR BONUS ##
+
+DEPS_BONUS	=	$(addprefix $(DEPS_C_PATH), $(BONUS_C:.c=.d)) \
+				$(addprefix $(DEPS_S_PATH), $(BONUS_S:.c=.d)) \
+				$(addprefix $(DEPS_SHARED), $(BONUS_SH:.c=.o))
+
 all: make_lib $(NAME)
+
+bonus: make_lib $(NAME)_bonus
+
+
+make_lib:
+	@echo "$(GREEN)Checking Libft$(DEF_COLOR)"
+	@$(MAKE) -s -C $(LIB_PATH)
+	@echo "$(BLUE)Done checking Libft$(DEF_COLOR)"
+
+## Make Client Bonus ##
+$(CLIENT)_bonus: $(OBJS_C_B) $(OBJS_SH_B) $(LIB)
+	@echo "$(BONUS_C) $(OBJS_C_B) $(OBJS_SH_B)"
+	$(CC) $(CFLAGS) $(INCS) $(INCS_CL) $(OBJS_C_B) $(OBJS_SH_B) -o $(CLIENT)_bonus $(LDFLAGS)
+	@echo "$(BLUE)Created $(CLIENT) executable with Bonus files$(DEF_COLOR)"
+
+
+$(OB_C_PATH)%_bonus.o: $(SRCS_C_PATH)%_bonus.c | $(OB_C_PATH) $(DEPS_C_PATH)
+	@echo "$(GREEN)Compiling $< $(DEF_COLOR)"
+	$(CC) $(CFLAGS) $(INCS) $(INCS_CL) -MMD -MP -c $< -o $@
+	@mv $(OB_C_PATH)$(notdir $(basename $<)).d $(DEPS_C_PATH)
+
+
+
+$(NAME)_bonus: $(CLIENT)_bonus
 
 
 $(OB_SHARED_P)%.o: $(SHARED_PATH)%.c | $(OB_SHARED_P) $(DEPS_SHARED)
@@ -68,23 +118,21 @@ $(OB_C_PATH)%.o: $(SRCS_C_PATH)%.c | $(OB_C_PATH) $(DEPS_C_PATH)
 	@$(CC) $(CFLAGS) $(INCS) $(INCS_CL) -MMD -MP -c $< -o $@
 	@mv $(OB_C_PATH)$(notdir $(basename $<)).d $(DEPS_C_PATH)
 
-
-$(CLIENT): $(OBJS_C) $(OBJS_SHARED) $(LIB)
-	$(CC) $(CFLAGS) $(INCS) $(INCS_CL) $(OBJS_C) $(OBJS_SHARED) -o $(CLIENT) $(LDFLAGS)
-	@echo "$(BLUE)Created $(CLIENT) executable$(DEF_COLOR)"
-
 $(OB_S_PATH)%.o: $(SRCS_S_PATH)%.c | $(OB_S_PATH) $(DEPS_S_PATH)
 	@echo "$(GREEN)Compiling $< $(DEF_COLOR)"
 	@$(CC) $(CFLAGS) $(INCS) $(INCS_SR) -MMD -MP -c $< -o $@
 	@mv $(OB_S_PATH)$(notdir $(basename $<)).d $(DEPS_S_PATH)
 
+$(CLIENT): $(OBJS_C) $(OBJS_SHARED) $(LIB)
+	$(CC) $(CFLAGS) $(INCS) $(INCS_CL) $(OBJS_C) $(OBJS_SHARED) -o $(CLIENT) $(LDFLAGS)
+	@echo "$(BLUE)Created $(CLIENT) executable$(DEF_COLOR)"
 
 $(SERVER): $(OBJS_S) $(OBJS_SHARED) $(LIB)
 	$(CC) $(CFLAGS) $(INCS) $(INCS_SR) $(OBJS_S) $(OBJS_SHARED) -o $(SERVER) $(LDFLAGS)
 	@echo "$(BLUE)Created $(SERVER) executable$(DEF_COLOR)"
 
 
-$(NAME): $(CLIENT) $(SERVER) $(LIB)
+$(NAME): $(CLIENT) $(SERVER) $(LIB) 
 	@echo "$(BLUE)Done$(DEF_COLOR)"
 
 
@@ -114,13 +162,14 @@ $(OB_S_PATH):
 	@echo "$(GREEN)Creating $(SERVER) Obj Dir $(DEF_COLOR)"
 	@mkdir -p $(OB_S_PATH)
 
-make_lib:
-	@echo "$(GREEN)Checking Libft$(DEF_COLOR)"
-	@$(MAKE) -s -C $(LIB_PATH)
-	@echo "$(BLUE)Done checking Libft$(DEF_COLOR)"
-	
 
--include $(DEPS)
+ifneq ($(MAKECMDGOALS),clean)
+ifeq ($(MAKECMDGOALS),all)
+-include $(DEPS_ALL)
+else ifeq ($(MAKECMDGOALS),bonus)
+-include $(DEPS_BONUS)
+endif
+endif
 
 fclean_lib:
 	@$(MAKE) fclean -s -C $(LIB_PATH)
@@ -142,4 +191,4 @@ clean_objects:
 
 re: fclean all
 
-.PHONY: all fclean clean fclean_lib clean_lib re
+.PHONY: all fclean clean fclean_lib clean_lib re bonus make_lib
