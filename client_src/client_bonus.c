@@ -6,14 +6,14 @@
 /*   By: lsoto-do <lsoto-do@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 17:59:36 by lsoto-do          #+#    #+#             */
-/*   Updated: 2023/06/19 17:59:38 by lsoto-do         ###   ########.fr       */
+/*   Updated: 2023/07/05 11:39:21 by lsoto-do         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include "libft.h"
-#include "minitalk.h"
-#include "client.h"
+#include "minitalk_bonus.h"
+#include "client_bonus.h"
 #include <signal.h>
 #include <errno.h>
 #include <stdio.h>
@@ -97,4 +97,5 @@ int	main(int argc, char **argv)
 	if (send_signal(server_pid, SIGUSR1) != 1)
 		exit_failure(server_pid, 1);
 	main_loop(server_pid);
+	return (0);
 }

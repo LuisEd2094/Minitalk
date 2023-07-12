@@ -6,7 +6,7 @@
 /*   By: lsoto-do <lsoto-do@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/20 16:04:20 by lsoto-do          #+#    #+#             */
-/*   Updated: 2023/06/20 16:04:38 by lsoto-do         ###   ########.fr       */
+/*   Updated: 2023/07/07 10:09:10 by lsoto-do         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	work_on_signal(int sig, siginfo_t *info)
 		{
 			ft_printf("%s", g_server->buffer);
 			if (g_server->c == '\0')
-			{	
+			{
 				str_done(info);
 				return ;
 			}

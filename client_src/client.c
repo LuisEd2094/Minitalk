@@ -6,7 +6,7 @@
 /*   By: lsoto-do <lsoto-do@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 17:59:30 by lsoto-do          #+#    #+#             */
-/*   Updated: 2023/06/19 17:59:32 by lsoto-do         ###   ########.fr       */
+/*   Updated: 2023/07/05 11:49:16 by lsoto-do         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,4 +97,5 @@ int	main(int argc, char **argv)
 	if (send_signal(server_pid, SIGUSR1) != 1)
 		exit_failure(server_pid, 1);
 	main_loop(server_pid);
+	return (0);
 }

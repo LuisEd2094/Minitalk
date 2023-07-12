@@ -20,7 +20,7 @@ void	if_failed(siginfo_t *info)
 {
 	set_g_vals();
 	ft_printf("Error, couldn't send signal to %i\
-	.\nServer is ready.", info->si_pid);
+.\nServer is ready.", info->si_pid);
 }
 
 void	clear_buffer(char *buffer)
