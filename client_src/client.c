@@ -81,7 +81,7 @@ int	main(int argc, char **argv)
 	int					server_pid ;
 	struct sigaction	act;
 
-	if (argc != 3 || !argv[2][0])
+	if (argc != 3 || !argv[1][0] || argv[1][0] == '0' || !argv[2][0])
 		exit_failure(0, 3);
 	ft_printf("Client PID %i\n", getpid());
 	server_pid = check_pid(argv[1]);
